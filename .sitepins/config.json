@@ -1,6 +1,6 @@
 {
   "content": "src/content",
-  "media": "public",
+  "media": "public/media",
   "public": "public",
   "configs": [],
   "custom-commit": false,
