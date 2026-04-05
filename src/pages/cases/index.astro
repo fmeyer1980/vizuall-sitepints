@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const allCases = (await getCollection('cases'))
+  .sort((a: CollectionEntry<'cases'>, b: CollectionEntry<'cases'>) =>
+    b.data.publishDate.getTime() - a.data.publishDate.getTime()
+  );
+---
+
+<Layout title="Cases" description="Se vores udvalgte cases og projekter.">
+
+  <section class="max-w-6xl mx-auto px-6 py-20">
+    <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Cases</h1>
+    <p class="mt-4 text-lg text-gray-500 max-w-xl">
+      Et udvalg af projekter vi har arbejdet på – fra branding til komplekse digitale løsninger.
+    </p>
+
+    <div class="mt-14 grid md:grid-cols-2 gap-6">
+      {allCases.map((c: CollectionEntry<'cases'>) => (
+        <a href={`/cases/${c.id}`} class="group border border-gray-200 rounded-2xl p-8 hover:border-gray-400 transition-colors">
+          <p class="text-sm text-gray-400 mb-2">{c.data.client}</p>
+          <h2 class="text-xl font-semibold group-hover:underline">{c.data.title}</h2>
+          <p class="mt-2 text-gray-500 text-sm">{c.data.description}</p>
+          {c.data.tags && (
+            <div class="mt-4 flex flex-wrap gap-2">
+              {c.data.tags.map((tag: string) => (
+                <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{tag}</span>
+              ))}
+            </div>
+          )}
+          <p class="mt-4 text-xs text-gray-300">
+            {c.data.publishDate.toLocaleDateString('da-DK', { year: 'numeric', month: 'long' })}
+          </p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+</Layout>

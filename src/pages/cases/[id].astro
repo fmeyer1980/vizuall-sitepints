@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const cases = await getCollection('cases');
+  return cases.map((c: CollectionEntry<'cases'>) => ({
+    params: { id: c.id },
+    props: { case: c },
+  }));
+}
+
+const { case: caseEntry } = Astro.props as { case: CollectionEntry<'cases'> };
+const { Content } = await render(caseEntry);
+---
+
+<Layout title={caseEntry.data.title} description={caseEntry.data.description}>
+
+  <article class="max-w-3xl mx-auto px-6 py-20">
+    <a href="/cases" class="text-sm text-gray-400 hover:text-gray-700 transition-colors">← Alle cases</a>
+
+    <div class="mt-8">
+      <p class="text-sm text-gray-400">{caseEntry.data.client}</p>
+      <h1 class="mt-2 text-4xl font-bold tracking-tight">{caseEntry.data.title}</h1>
+      <p class="mt-4 text-lg text-gray-500">{caseEntry.data.description}</p>
+
+      {caseEntry.data.tags && (
+        <div class="mt-6 flex flex-wrap gap-2">
+          {caseEntry.data.tags.map((tag: string) => (
+            <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{tag}</span>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="mt-12 prose prose-gray max-w-none">
+      <Content />
+    </div>
+  </article>
+
+</Layout>

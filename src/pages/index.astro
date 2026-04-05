@@ -1,17 +1,69 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 
+const homePage = await getEntry('pages', 'index');
+const { heading, subheading, title, description } = homePage!.data;
+
+const featuredCases = (await getCollection('cases'))
+  .filter((c: CollectionEntry<'cases'>) => c.data.featured)
+  .sort((a: CollectionEntry<'cases'>, b: CollectionEntry<'cases'>) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title={title} description={description}>
+
+  <!-- Hero -->
+  <section class="max-w-6xl mx-auto px-6 py-24 md:py-36">
+    <h1 class="text-5xl md:text-7xl font-bold tracking-tight leading-tight max-w-3xl">
+      {heading}
+    </h1>
+    <p class="mt-6 text-xl text-gray-500 max-w-xl">
+      {subheading}
+    </p>
+    <div class="mt-10 flex gap-4">
+      <a href="/cases" class="bg-black text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+        Se vores cases
+      </a>
+      <a href="/kontakt" class="border border-gray-300 px-6 py-3 rounded-full text-sm font-medium hover:border-gray-500 transition-colors">
+        Kontakt os
+      </a>
+    </div>
+  </section>
+
+  <!-- Featured cases -->
+  {featuredCases.length > 0 && (
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+      <h2 class="text-2xl font-bold mb-8">Udvalgte cases</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        {featuredCases.map((c: CollectionEntry<'cases'>) => (
+          <a href={`/cases/${c.id}`} class="group border border-gray-200 rounded-2xl p-8 hover:border-gray-400 transition-colors">
+            <p class="text-sm text-gray-400 mb-2">{c.data.client}</p>
+            <h3 class="text-xl font-semibold group-hover:underline">{c.data.title}</h3>
+            <p class="mt-2 text-gray-500 text-sm">{c.data.description}</p>
+            {c.data.tags && (
+              <div class="mt-4 flex flex-wrap gap-2">
+                {c.data.tags.map((tag: string) => (
+                  <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{tag}</span>
+                ))}
+              </div>
+            )}
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- CTA -->
+  <section class="bg-gray-50 py-24">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+      <h2 class="text-3xl font-bold">Klar til at komme i gang?</h2>
+      <p class="mt-4 text-gray-500 max-w-md mx-auto">
+        Fortæl os om dit projekt, og vi vender tilbage inden for 24 timer.
+      </p>
+      <a href="/kontakt" class="mt-8 inline-block bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+        Tag kontakt
+      </a>
+    </div>
+  </section>
+
+</Layout>
